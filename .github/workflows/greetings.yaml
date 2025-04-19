@@ -15,3 +15,10 @@ jobs:
         run: echo "$Greeting $First_Name. Today is $DAY_OF_WEEK!"
         env:
           First_Name: Mona ## Environment variable only for the step "Say Hello Mona it's Monday" of the job "greeting_job"
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging    # ← coincide con el nombre que diste
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use secret
+        run: echo "Deploy key is ${{ secrets.DEPLOY_KEY }}"
