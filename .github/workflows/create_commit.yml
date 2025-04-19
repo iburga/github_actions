@@ -1,0 +1,49 @@
+name: Create and Push File
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  create_commit:
+    runs-on: ubuntu-latest
+
+    # 1) Dale permiso de escritura para GitHub token
+    permissions:
+      contents: write
+
+    # 2) Asocia el job al environment que creaste
+    environment: deploy-env
+
+    steps:
+      # a) Bajar código
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # b) Configurar Git con credenciales de CI
+      - name: Configure Git
+        run: |
+          git config --global user.email "my-bot@bot.com"
+          git config --global user.name  "my-bot"
+
+      # c) Inicializar o reusar .git y apuntar al origen
+      - name: Init & sync
+        run: |
+          git init
+          git remote add origin "https://$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git"
+          git fetch
+          git checkout main
+          git pull
+
+      # d) Ejecutar tests y capturar log
+      - name: Run pytest and log
+        run: |
+          pytest > log_pytest.txt
+          ls -lia
+
+      # e) Añadir, commitear y empujar el nuevo archivo
+      - name: Commit & Push changes
+        run: |
+          git add log_pytest.txt
+          git commit -m "Add pytest log from CI"
+          git push origin main
