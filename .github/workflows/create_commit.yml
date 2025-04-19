@@ -20,6 +20,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install pytest
+        run: pip install pytest
+
+
       # b) Configurar Git con credenciales de CI
       - name: Configure Git
         run: |
